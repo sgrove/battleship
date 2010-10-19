@@ -34,26 +34,26 @@
 =end
 
 class Board
-  attr_reader :board
+  attr_reader :board, :width, :height
 
-  def initialize
-    @board = new_board
+  def initialize(options = {})
+    @width  = options[:width]  || 10     # Default to 10x10
+    @height = options[:height] || 10     # Default to 10x10
+    @board  = generate_board(@width, @height) # Parameterized because I hate state
   end
 
-  def new_board
-    return [
-            [0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0]
-           ]
+  def generate_board(width, height)
+    blank_board = []
+
+    height.times do
+      row = []
+      width.times do
+        row << 0
+      end
+      blank_board << row
+    end
+
+    return blank_board
   end
 
   def alive?
@@ -112,8 +112,3 @@ end
 
 board = Board.new
 board.show
-board.place_ship("horizontal", 2, 5, 1)
-board.show
-board.bomb(2, 5)
-board.show
-puts board.alive?
