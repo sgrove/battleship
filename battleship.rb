@@ -29,7 +29,7 @@
   [LOW] Notify when single ship has been sunk
   [LOW] Keep track of how many undamaged pieces on a board
   [HIGH] Check when board has no undamaged ship pieces left [DONE]
-  [HIGH] Prevent ships from being placed off the map
+  [HIGH] Prevent ships from being placed off the map [DONE]
 
 =end
 
@@ -60,6 +60,10 @@ class Board
     live_count != 0
   end
 
+  def ship_died
+    system "say Oh no you sunk my battleship"
+  end
+
   def live_count
     count = 0 
 
@@ -86,14 +90,28 @@ class Board
     # TODO: Probably a nicer way to handle orientation,
     #       don't care for the conditional here.
     if "horizontal" == orientation
+      # Check for boundaries
+      return false if (x + length) > @width
+
+
       length.times do |offset|
         place_value(x + offset, y, 1)
       end
     elsif "vertical" == orientation
+      # Check for boundaries
+      return false if (y + length) > @height
+
       length.times do |offset|
         place_value(x, y + offset, 1)
       end
+    else
+      # Diagonal perhaps? :D
+      puts "I don't know that orientation"
+      return false
     end
+
+    # We've placed it or bailed by now
+    return true
   end
 
   def value_at(x, y)
@@ -103,6 +121,7 @@ class Board
   def bomb(x, y)
     if 1 == value_at(x, y)
       place_value(x, y, 2)
+      system "say -v Deranged boom"
       return true
     end
 
@@ -112,3 +131,11 @@ end
 
 board = Board.new
 board.show
+board.place_ship("horizontal", 0, 0, 5)
+board.show
+board.place_ship("horizontal", 5, 1, 5)
+board.show
+board.show
+board.place_ship("horizontal", 6, 2, 5)
+board.show
+board.bomb(0,0)
